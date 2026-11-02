@@ -1,0 +1,484 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Schede</title>
+<meta name="theme-color" content="#1f6f5c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Schede">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" href="icons/icon-192.png">
+<style>
+:root{
+  --bg:#f6f4ef; --card:#ffffff; --ink:#1d1d1b; --muted:#6b6a65; --line:#e3e0d8;
+  --accent:#1f6f5c; --accent-ink:#ffffff; --again:#b3402a; --hard:#a8741a; --good:#1f6f5c; --easy:#2a5ea8;
+  --hl:#fde68a;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#141413; --card:#1f1f1d; --ink:#ecebe6; --muted:#9a988f; --line:#2f2e2b;
+    --accent:#3fa58a; --accent-ink:#0d1f1a; --again:#e0705a; --hard:#d9a446; --good:#3fa58a; --easy:#6b9be0;
+    --hl:#6b5a17;
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);
+  font:17px/1.45 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;
+  -webkit-text-size-adjust:100%;}
+body{padding:env(safe-area-inset-top) 16px calc(env(safe-area-inset-bottom) + 16px);min-height:100dvh}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.wrap{max-width:640px;margin:0 auto}
+header{display:flex;align-items:center;justify-content:space-between;padding:14px 0 10px}
+h1{font-size:28px;margin:0;letter-spacing:-.02em}
+.sub{color:var(--muted);font-size:14px}
+.btn{background:var(--accent);color:var(--accent-ink);padding:12px 16px;border-radius:12px;font-weight:600;min-height:44px}
+.btn.ghost{background:transparent;color:var(--accent);border:1.5px solid var(--accent)}
+.btn.small{padding:8px 12px;min-height:36px;font-size:15px}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row > .btn{flex:1}
+.list{margin:18px 0;display:flex;flex-direction:column;gap:10px}
+.deck{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 14px 14px 16px;
+  display:flex;align-items:center;gap:12px}
+.deck .name{font-weight:600;word-break:break-word}
+.deck .meta{color:var(--muted);font-size:14px;margin-top:2px}
+.deck .grow{flex:1;min-width:0}
+.pill{background:var(--accent);color:var(--accent-ink);border-radius:999px;padding:2px 10px;font-size:14px;font-weight:700}
+.pill.zero{background:var(--line);color:var(--muted)}
+.empty{text-align:center;color:var(--muted);padding:40px 10px}
+.menu{font-size:22px;padding:6px 10px;color:var(--muted)}
+/* studio */
+#study{display:none;flex-direction:column;min-height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 16px)}
+.topbar{display:flex;align-items:center;gap:10px;padding:12px 0}
+.bar{flex:1;height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.bar > i{display:block;height:100%;background:var(--accent);width:0;transition:width .2s}
+.flash{flex:1;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px 20px;
+  display:flex;flex-direction:column;gap:14px;overflow:auto;cursor:pointer;user-select:text}
+.flash .q{font-size:21px;font-weight:600}
+.flash hr{border:0;border-top:1px dashed var(--line);margin:4px 0;width:100%}
+.flash .a{font-size:18px}
+.hint{color:var(--muted);text-align:center;font-size:14px;margin-top:auto}
+.grades{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding-top:12px}
+.grades button{border-radius:12px;padding:10px 4px;min-height:58px;color:#fff;font-weight:600;font-size:15px;line-height:1.2}
+.grades small{display:block;font-weight:400;opacity:.85;font-size:12px}
+.g0{background:var(--again)}.g1{background:var(--hard)}.g2{background:var(--good)}.g3{background:var(--easy)}
+.showbtn{width:100%;margin-top:12px;min-height:58px}
+code{font-family:ui-monospace,Menlo,monospace;font-size:.9em;background:var(--line);padding:1px 5px;border-radius:5px}
+pre{background:var(--line);padding:10px;border-radius:8px;overflow:auto;margin:0}
+pre code{background:none;padding:0}
+mark{background:var(--hl);color:inherit;padding:0 2px;border-radius:3px}
+.cloze{background:var(--hl);border-radius:4px;padding:0 6px}
+ul,ol{margin:0;padding-left:1.3em}
+p{margin:0 0 .5em}
+p:last-child{margin-bottom:0}
+dialog{border:0;border-radius:16px;background:var(--card);color:var(--ink);padding:18px;width:min(560px,calc(100vw - 24px))}
+dialog::backdrop{background:rgba(0,0,0,.45)}
+textarea,input[type=text]{width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1px solid var(--line);
+  border-radius:10px;padding:10px}
+textarea{min-height:220px;font-family:ui-monospace,Menlo,monospace;font-size:14px}
+dialog h2{margin:0 0 10px;font-size:20px}
+.stack{display:flex;flex-direction:column;gap:10px}
+.toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 12px);transform:translateX(-50%);
+  background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:15px;opacity:0;transition:opacity .2s;
+  pointer-events:none;max-width:90vw;text-align:center}
+.toast.on{opacity:1}
+.foot{color:var(--muted);font-size:13px;text-align:center;margin-top:24px}
+.foot a{color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- HOME -->
+<section id="home">
+  <header>
+    <div><h1>Schede</h1><div class="sub" id="summary"></div></div>
+    <button class="menu" id="menuBtn" aria-label="Menu">•••</button>
+  </header>
+  <div class="row">
+    <button class="btn" id="importBtn">Importa file .md</button>
+    <button class="btn ghost" id="pasteBtn">Incolla testo</button>
+  </div>
+  <input type="file" id="fileIn" multiple hidden>
+  <div class="list" id="decks"></div>
+  <div class="foot">Dati salvati solo su questo dispositivo · <a href="#" id="helpLink">Formato file</a></div>
+</section>
+
+<!-- STUDIO -->
+<section id="study">
+  <div class="topbar">
+    <button class="btn ghost small" id="quitBtn">Esci</button>
+    <div class="bar"><i id="prog"></i></div>
+    <span class="sub" id="count"></span>
+  </div>
+  <div class="flash" id="flash">
+    <div class="q" id="q"></div>
+    <div id="ansWrap" hidden><hr><div class="a" id="a"></div></div>
+    <div class="hint" id="hint">Tocca la scheda per vedere la risposta</div>
+  </div>
+  <button class="btn showbtn" id="showBtn">Mostra risposta</button>
+  <div class="grades" id="grades" hidden>
+    <button class="g0" data-g="0">Di nuovo<small id="l0"></small></button>
+    <button class="g1" data-g="1">Difficile<small id="l1"></small></button>
+    <button class="g2" data-g="2">Bene<small id="l2"></small></button>
+    <button class="g3" data-g="3">Facile<small id="l3"></small></button>
+  </div>
+</section>
+
+</div>
+
+<dialog id="pasteDlg">
+  <form method="dialog" class="stack">
+    <h2>Incolla testo Markdown</h2>
+    <input type="text" id="pasteName" placeholder="Argomento (se manca il titolo # nel testo)">
+    <textarea id="pasteText" placeholder="# Argomento&#10;&#10;## Domanda&#10;Risposta&#10;&#10;Domanda breve :: Risposta breve"></textarea>
+    <div class="row">
+      <button class="btn ghost" value="cancel">Annulla</button>
+      <button class="btn" value="ok" id="pasteOk">Importa</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="deckDlg">
+  <form method="dialog" class="stack">
+    <h2 id="deckDlgTitle"></h2>
+    <button class="btn" value="cram">Ripassa tutte (senza salvare progressi)</button>
+    <button class="btn ghost" value="rename">Rinomina argomento</button>
+    <button class="btn ghost" value="reset">Azzera progressi</button>
+    <button class="btn ghost" value="delete" style="color:var(--again);border-color:var(--again)">Elimina argomento</button>
+    <button class="btn ghost" value="cancel">Chiudi</button>
+  </form>
+</dialog>
+
+<dialog id="menuDlg">
+  <form method="dialog" class="stack">
+    <h2>Menu</h2>
+    <button class="btn" value="export">Esporta backup (.json)</button>
+    <button class="btn ghost" value="import">Ripristina backup</button>
+    <label class="sub">Nuove schede per sessione:
+      <input type="text" id="newLimit" inputmode="numeric" style="margin-top:6px">
+    </label>
+    <button class="btn ghost" value="cancel">Chiudi</button>
+  </form>
+  <input type="file" id="backupIn" hidden>
+</dialog>
+
+<dialog id="helpDlg">
+  <form method="dialog" class="stack">
+    <h2>Formato dei file .md</h2>
+    <div class="sub" style="color:var(--ink)">
+      <p><b># Titolo</b> = nome dell'argomento. Se manca, l'app usa il nome del file.</p>
+      <p><b>## Domanda</b> = fronte. Il testo sotto, fino al prossimo <code>##</code> o a <code>---</code>, è il retro.</p>
+      <p><b>Domanda :: Risposta</b> su una riga = una scheda.</p>
+      <p><b>==parola==</b> in una riga fuori dai blocchi <code>##</code> = scheda a completamento.</p>
+      <p>Se importi di nuovo lo stesso argomento, l'app aggiorna il testo e conserva i progressi.</p>
+    </div>
+    <button class="btn" value="cancel">OK</button>
+  </form>
+</dialog>
+
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+/* ====== PARSER (testabile anche con node) ====== */
+// BEGIN-PARSER
+function hash(str){ // cyrb53
+  let h1=0xdeadbeef, h2=0x41c6ce57;
+  for(let i=0;i<str.length;i++){const c=str.charCodeAt(i);h1=Math.imul(h1^c,2654435761);h2=Math.imul(h2^c,1597334677);}
+  h1=Math.imul(h1^(h1>>>16),2246822507)^Math.imul(h2^(h2>>>13),3266489909);
+  h2=Math.imul(h2^(h2>>>16),2246822507)^Math.imul(h1^(h1>>>13),3266489909);
+  return (4294967296*(2097151&h2)+(h1>>>0)).toString(36);
+}
+function parseMarkdown(text, fallbackName){
+  const lines = String(text).replace(/^﻿/,'').replace(/\r\n?/g,'\n').split('\n');
+  let deck = null, cur = null, inCode = false, inFront = false;
+  const out = [];
+  const push = () => {
+    if(cur){
+      const back = cur.back.join('\n').trim();
+      if(cur.front.trim() && back) out.push({front:cur.front.trim(), back});
+    }
+    cur = null;
+  };
+  for(let i=0;i<lines.length;i++){
+    const line = lines[i];
+    // YAML front matter all'inizio
+    if(i===0 && line.trim()==='---'){ inFront = true; continue; }
+    if(inFront){ if(line.trim()==='---'||line.trim()==='...') inFront=false; else {
+      const m = line.match(/^(?:argomento|deck|title|titolo)\s*:\s*(.+)$/i); if(m && !deck) deck = m[1].trim().replace(/^["']|["']$/g,''); }
+      continue; }
+    if(/^\s*(```|~~~)/.test(line)){ inCode = !inCode; if(cur) cur.back.push(line); continue; }
+    if(inCode){ if(cur) cur.back.push(line); continue; }
+    let m;
+    if((m = line.match(/^#\s+(.+?)\s*#*\s*$/))){ push(); if(!deck) deck = m[1]; continue; }
+    if((m = line.match(/^##\s+(.+?)\s*#*\s*$/))){ push(); cur = {front:m[1], back:[]}; continue; }
+    if(/^\s*(---+|\*\*\*+|___+)\s*$/.test(line)){ push(); continue; }
+    if((m = line.match(/^\s*(?:[-*+]\s+)?(.+?)\s+::\s+(.+)$/))){
+      push(); out.push({front:m[1].trim(), back:m[2].trim()}); continue;
+    }
+    if(cur){ cur.back.push(line); continue; }
+    // Cloze: righe con ==evidenziato== fuori dai blocchi ##
+    if(/==[^=]+==/.test(line)){
+      const clean = line.replace(/^\s*(?:[-*+]|\d+\.)\s+/,'').trim();
+      const parts = [...clean.matchAll(/==([^=]+)==/g)];
+      parts.forEach((p, k) => {
+        let n = 0;
+        const front = clean.replace(/==([^=]+)==/g, (all, word) => (n++===k ? '[[…]]' : word));
+        out.push({front, back: clean.replace(/==([^=]+)==/g, (all, word, off) => '**'+word+'**'), cloze:true});
+      });
+    }
+  }
+  push();
+  deck = (deck || fallbackName || 'Senza titolo').trim();
+  return {deck, cards: out.map(c => ({...c, id: hash(deck+'\u0001'+c.front)}))};
+}
+// END-PARSER
+
+/* ====== MARKDOWN -> HTML (sottoinsieme sicuro) ====== */
+function esc(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function inline(s){
+  s = esc(s);
+  s = s.replace(/`([^`]+)`/g,'<code>$1</code>');
+  s = s.replace(/\[\[…\]\]/g,'<span class="cloze">&nbsp;?&nbsp;</span>');
+  s = s.replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>').replace(/__([^_]+)__/g,'<b>$1</b>');
+  s = s.replace(/(^|[^*])\*([^*\s][^*]*)\*/g,'$1<i>$2</i>').replace(/(^|\W)_([^_\s][^_]*)_(?=\W|$)/g,'$1<i>$2</i>');
+  s = s.replace(/==([^=]+)==/g,'<mark>$1</mark>');
+  return s;
+}
+function md(src){
+  const lines = src.split('\n'); let html = '', list = null, para = [], code = null;
+  const flushP = () => { if(para.length){ html += '<p>'+para.map(inline).join('<br>')+'</p>'; para = []; } };
+  const flushL = () => { if(list){ html += '</'+list+'>'; list = null; } };
+  for(const line of lines){
+    if(/^\s*(```|~~~)/.test(line)){
+      if(code===null){ flushP(); flushL(); code = []; } else { html += '<pre><code>'+esc(code.join('\n'))+'</code></pre>'; code = null; }
+      continue;
+    }
+    if(code!==null){ code.push(line); continue; }
+    let m;
+    if((m = line.match(/^\s*[-*+]\s+(.*)$/))){ flushP(); if(list!=='ul'){ flushL(); html += '<ul>'; list = 'ul'; } html += '<li>'+inline(m[1])+'</li>'; continue; }
+    if((m = line.match(/^\s*\d+[.)]\s+(.*)$/))){ flushP(); if(list!=='ol'){ flushL(); html += '<ol>'; list = 'ol'; } html += '<li>'+inline(m[1])+'</li>'; continue; }
+    if((m = line.match(/^#{3,6}\s+(.*)$/))){ flushP(); flushL(); html += '<p><b>'+inline(m[1])+'</b></p>'; continue; }
+    if(!line.trim()){ flushP(); flushL(); continue; }
+    flushL(); para.push(line.replace(/^>\s?/,''));
+  }
+  if(code!==null) html += '<pre><code>'+esc(code.join('\n'))+'</code></pre>';
+  flushP(); flushL();
+  return html;
+}
+
+/* ====== DATI ====== */
+const KEY = 'schede.v1';
+const DAY = 86400000;
+let db = load();
+function load(){
+  try{ const d = JSON.parse(localStorage.getItem(KEY)); if(d && d.cards) return d; }catch(e){}
+  return {cards:{}, settings:{newLimit:20}};
+}
+function save(){
+  try{ localStorage.setItem(KEY, JSON.stringify(db)); }
+  catch(e){ toast('Memoria piena: esporta un backup ed elimina argomenti vecchi.'); }
+}
+if(navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(()=>{});
+
+function importParsed({deck, cards}){
+  let added = 0, updated = 0, removed = 0;
+  const keep = new Set();
+  for(const c of cards){
+    keep.add(c.id);
+    const old = db.cards[c.id];
+    if(old){ if(old.back!==c.back||old.front!==c.front){ updated++; } Object.assign(old,{front:c.front, back:c.back, deck}); }
+    else { db.cards[c.id] = {id:c.id, deck, front:c.front, back:c.back, due:0, ivl:0, ease:2.5, reps:0, lapses:0, isNew:true}; added++; }
+  }
+  for(const id in db.cards){ const c = db.cards[id]; if(c.deck===deck && !keep.has(id)){ delete db.cards[id]; removed++; } }
+  save();
+  return {added, updated, removed};
+}
+
+/* ====== RIPETIZIONE DILAZIONATA (SM-2 semplificato) ====== */
+function preview(c, g){
+  let ivl = c.ivl, ease = c.ease;
+  if(g===0) return {ivl:0, ease:Math.max(1.3, ease-0.2), due:Date.now()+10*60000};
+  if(g===1){ ivl = c.reps===0 ? 1 : Math.max(1, ivl*1.2); ease = Math.max(1.3, ease-0.15); }
+  if(g===2){ ivl = c.reps===0 ? 1 : c.reps===1 ? 3 : Math.max(ivl+1, ivl*ease); }
+  if(g===3){ ivl = c.reps===0 ? 4 : Math.max(ivl+2, ivl*ease*1.3); ease += 0.15; }
+  ivl = Math.round(ivl);
+  return {ivl, ease, due: startOfDay(Date.now()) + ivl*DAY};
+}
+function startOfDay(t){ const d = new Date(t); d.setHours(4,0,0,0); if(d.getTime()>t) d.setDate(d.getDate()-1); return d.getTime(); }
+function fmtIvl(p){ if(p.ivl===0) return '10 min'; if(p.ivl<30) return p.ivl+' g'; if(p.ivl<365) return Math.round(p.ivl/30)+' mesi'; return (p.ivl/365).toFixed(1)+' anni'; }
+function grade(c, g){
+  const p = preview(c, g);
+  c.ivl = p.ivl; c.ease = p.ease; c.due = p.due; c.isNew = false;
+  if(g===0){ c.reps = 0; c.lapses++; } else c.reps++;
+}
+
+/* ====== UI ====== */
+const $ = id => document.getElementById(id);
+function toast(msg){ const t=$('toast'); t.textContent=msg; t.classList.add('on'); clearTimeout(toast.t); toast.t=setTimeout(()=>t.classList.remove('on'),2600); }
+
+function deckStats(){
+  const now = Date.now(), m = {};
+  for(const id in db.cards){
+    const c = db.cards[id];
+    const s = m[c.deck] || (m[c.deck] = {name:c.deck, total:0, due:0, fresh:0});
+    s.total++;
+    if(c.isNew) s.fresh++; else if(c.due<=now) s.due++;
+  }
+  return Object.values(m).sort((a,b)=>a.name.localeCompare(b.name,'it'));
+}
+function renderHome(){
+  const stats = deckStats(), lim = db.settings.newLimit;
+  let tot = 0, todo = 0;
+  $('decks').innerHTML = stats.length ? '' : '<div class="empty">Nessun argomento.<br>Importa un file .md per iniziare.</div>';
+  for(const s of stats){
+    tot += s.total; const n = s.due + Math.min(s.fresh, lim); todo += n;
+    const el = document.createElement('div'); el.className = 'deck';
+    el.innerHTML = `<div class="grow"><div class="name">${esc(s.name)}</div>
+      <div class="meta">${s.total} schede · ${s.due} da ripassare · ${s.fresh} nuove</div></div>
+      <span class="pill ${n?'':'zero'}">${n}</span><button class="menu" aria-label="Opzioni">⋯</button>`;
+    el.querySelector('.grow').onclick = () => startStudy(s.name, false);
+    el.querySelector('.pill').onclick = () => startStudy(s.name, false);
+    el.querySelector('.menu').onclick = () => deckMenu(s.name);
+    $('decks').appendChild(el);
+  }
+  $('summary').textContent = tot ? `${tot} schede · ${todo} da fare oggi` : '';
+}
+
+/* --- sessione --- */
+let S = null;
+function shuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+function startStudy(deck, cram){
+  const now = Date.now(), all = Object.values(db.cards).filter(c=>c.deck===deck);
+  let q;
+  if(cram) q = shuffle(all.slice());
+  else {
+    const due = all.filter(c=>!c.isNew && c.due<=now).sort((a,b)=>a.due-b.due);
+    const fresh = all.filter(c=>c.isNew).slice(0, db.settings.newLimit);
+    q = shuffle(due.concat(fresh));
+  }
+  if(!q.length){ toast('Niente da ripassare oggi in questo argomento.'); return; }
+  S = {deck, cram, q, done:0, total:q.length, shown:false};
+  $('home').style.display='none'; $('study').style.display='flex';
+  showCard();
+}
+function showCard(){
+  if(!S.q.length) return endStudy(true);
+  const c = S.q[0]; S.shown = false;
+  $('q').innerHTML = md(c.front);
+  $('a').innerHTML = md(c.back);
+  $('ansWrap').hidden = true; $('grades').hidden = true; $('showBtn').hidden = false; $('hint').hidden = false;
+  $('count').textContent = `${S.done}/${S.total}`;
+  $('prog').style.width = (100*S.done/S.total)+'%';
+  $('flash').scrollTop = 0;
+}
+function reveal(){
+  if(!S || S.shown) return;
+  S.shown = true; const c = S.q[0];
+  $('ansWrap').hidden = false; $('showBtn').hidden = true; $('hint').hidden = true; $('grades').hidden = false;
+  for(let g=0; g<4; g++) $('l'+g).textContent = S.cram ? '' : fmtIvl(preview(c,g));
+}
+function answer(g){
+  if(!S || !S.shown) return;
+  const c = S.q.shift();
+  if(!S.cram){ grade(c, g); save(); }
+  if(g===0) S.q.splice(Math.min(S.q.length, 3+Math.floor(Math.random()*3)), 0, c); // rivedi tra poco
+  else S.done++;
+  showCard();
+}
+function endStudy(finished){
+  if(finished) toast(S.cram ? 'Ripasso completato.' : 'Sessione completata. Ottimo lavoro.');
+  S = null; $('study').style.display='none'; $('home').style.display='block'; renderHome();
+}
+
+/* --- import --- */
+$('importBtn').onclick = () => $('fileIn').click();
+$('fileIn').onchange = async e => {
+  const files = [...e.target.files]; e.target.value = '';
+  let msg = [];
+  for(const f of files){
+    if(!/\.(md|markdown|txt)$/i.test(f.name)){ msg.push(`${f.name}: formato non supportato`); continue; }
+    const text = await f.text();
+    const parsed = parseMarkdown(text, f.name.replace(/\.[^.]+$/,''));
+    if(!parsed.cards.length){ msg.push(`${f.name}: nessuna scheda trovata`); continue; }
+    const r = importParsed(parsed);
+    msg.push(`${parsed.deck}: +${r.added} nuove, ${r.updated} aggiornate`+(r.removed?`, ${r.removed} rimosse`:''));
+  }
+  renderHome(); toast(msg.join(' · '));
+};
+$('pasteBtn').onclick = () => { $('pasteText').value=''; $('pasteName').value=''; $('pasteDlg').showModal(); };
+$('pasteDlg').addEventListener('close', () => {
+  if($('pasteDlg').returnValue!=='ok') return;
+  const parsed = parseMarkdown($('pasteText').value, $('pasteName').value || 'Appunti incollati');
+  if(!parsed.cards.length){ toast('Nessuna scheda trovata. Controlla il formato.'); return; }
+  const r = importParsed(parsed); renderHome();
+  toast(`${parsed.deck}: +${r.added} nuove, ${r.updated} aggiornate`);
+});
+
+/* --- menu argomento --- */
+let menuDeck = null;
+function deckMenu(name){ menuDeck = name; $('deckDlgTitle').textContent = name; $('deckDlg').showModal(); }
+$('deckDlg').addEventListener('close', () => {
+  const v = $('deckDlg').returnValue, d = menuDeck;
+  const cards = Object.values(db.cards).filter(c=>c.deck===d);
+  if(v==='cram') startStudy(d, true);
+  if(v==='rename'){
+    const n = (prompt('Nuovo nome dell\'argomento:', d)||'').trim();
+    if(n && n!==d){
+      for(const c of cards){ delete db.cards[c.id]; c.deck = n; c.id = hash(n+'\u0001'+c.front); db.cards[c.id] = c; }
+      save(); renderHome();
+    }
+  }
+  if(v==='reset' && confirm(`Azzerare i progressi di "${d}"?`)){
+    for(const c of cards) Object.assign(c,{due:0,ivl:0,ease:2.5,reps:0,lapses:0,isNew:true}); save(); renderHome();
+  }
+  if(v==='delete' && confirm(`Eliminare "${d}" e le sue ${cards.length} schede?`)){
+    for(const c of cards) delete db.cards[c.id]; save(); renderHome();
+  }
+});
+
+/* --- menu generale / backup --- */
+$('menuBtn').onclick = () => { $('newLimit').value = db.settings.newLimit; $('menuDlg').showModal(); };
+$('menuDlg').addEventListener('close', () => {
+  const n = parseInt($('newLimit').value,10); if(n>0 && n<1000){ db.settings.newLimit = n; save(); renderHome(); }
+  const v = $('menuDlg').returnValue;
+  if(v==='export'){
+    const blob = new Blob([JSON.stringify(db)], {type:'application/json'});
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    a.download = 'schede-backup-'+new Date().toISOString().slice(0,10)+'.json'; a.click();
+    setTimeout(()=>URL.revokeObjectURL(a.href), 4000);
+  }
+  if(v==='import') $('backupIn').click();
+});
+$('backupIn').onchange = async e => {
+  const f = e.target.files[0]; e.target.value=''; if(!f) return;
+  try{
+    const d = JSON.parse(await f.text());
+    if(!d.cards) throw 0;
+    if(!confirm('Il backup sostituisce tutti i dati attuali. Continuare?')) return;
+    db = {cards:d.cards, settings:Object.assign({newLimit:20}, d.settings)}; save(); renderHome(); toast('Backup ripristinato.');
+  }catch(err){ toast('File di backup non valido.'); }
+};
+$('helpLink').onclick = e => { e.preventDefault(); $('helpDlg').showModal(); };
+
+/* --- studio: eventi --- */
+$('flash').onclick = e => { if(window.getSelection().toString()) return; reveal(); };
+$('showBtn').onclick = reveal;
+$('grades').onclick = e => { const b = e.target.closest('button'); if(b) answer(+b.dataset.g); };
+$('quitBtn').onclick = () => endStudy(false);
+document.addEventListener('keydown', e => {
+  if(!S || document.querySelector('dialog[open]')) return;
+  if(e.key===' '||e.key==='Enter'){ e.preventDefault(); S.shown ? answer(2) : reveal(); }
+  else if(S.shown && '1234'.includes(e.key)) answer(+e.key-1);
+  else if(e.key==='Escape') endStudy(false);
+});
+
+renderHome();
+if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>
